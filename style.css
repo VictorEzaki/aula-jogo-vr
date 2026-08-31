@@ -1,0 +1,213 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1a2e;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Mira (apenas desktop) ---------- */
+.crosshair.hidden {
+  display: none;
+}
+
+.crosshair {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 50;
+}
+
+.crosshair-line {
+  position: absolute;
+  background: #ffe14d;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.crosshair-h {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  transform: translateY(-50%);
+}
+
+.crosshair-v {
+  left: 50%;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.crosshair-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffe14d;
+  transform: translate(-50%, -50%);
+}
+
+/* ---------- Telas de overlay (DOM) ---------- */
+.overlay-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 25, 0.55);
+  z-index: 100;
+}
+
+.overlay-screen.hidden {
+  display: none;
+}
+
+.menu-cards {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.overlay-card {
+  background: linear-gradient(180deg, #2b1d4a, #1a1030);
+  border: 3px solid #ffb347;
+  border-radius: 18px;
+  padding: 28px 32px;
+  color: #fff6da;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 179, 71, 0.35);
+  min-width: 280px;
+}
+
+.game-title {
+  font-size: 1.6rem;
+  color: #ff6bcb;
+  text-shadow: 0 0 10px rgba(255, 107, 203, 0.7);
+  margin-bottom: 8px;
+}
+
+.game-subtitle {
+  font-size: 0.95rem;
+  color: #cbd5f5;
+  margin-bottom: 20px;
+}
+
+.field-label {
+  display: block;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #cbd5f5;
+  margin-bottom: 6px;
+}
+
+.text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #6b5b95;
+  background: #120a26;
+  color: #fff6da;
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #ffe14d;
+}
+
+.game-button {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #4dd0e1, #1d9e75);
+  color: #04342c;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.game-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.game-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.game-hint {
+  margin-top: 14px;
+  font-size: 0.8rem;
+  color: #9b8fc7;
+}
+
+.leaderboard-title {
+  font-size: 1.2rem;
+  color: #ffe14d;
+  margin-bottom: 16px;
+}
+
+.leaderboard-list {
+  list-style: none;
+  text-align: left;
+  min-width: 220px;
+}
+
+.leaderboard-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+}
+
+.leaderboard-list li:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-rank {
+  color: #ffb347;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.leaderboard-loading {
+  color: #9b8fc7;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Botão de entrar em VR (injetado pelo VRButton do Three.js) */
+#VRButton {
+  z-index: 60 !important;
+}

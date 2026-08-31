@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StarShot Arcade - Tiro ao Alvo VR</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Mira usada apenas no modo desktop (mouse). Escondida em VR. -->
+    <div id="crosshair" class="crosshair">
+      <div class="crosshair-line crosshair-h"></div>
+      <div class="crosshair-line crosshair-v"></div>
+      <div class="crosshair-dot"></div>
+    </div>
+
+    <!--
+      Tela de menu em DOM. Fica ativa apenas ANTES de entrar em VR
+      (digitar nome e ver o leaderboard exige teclado, o que não tem
+      um equivalente prático em espaço 3D). Uma vez que a partida
+      começa, HUD e Game Over passam a ser painéis 3D na cena,
+      para funcionar igualmente em desktop e dentro do headset.
+    -->
+    <div id="menu-screen" class="overlay-screen">
+      <div class="menu-cards">
+        <section class="overlay-card login-card">
+          <h1 class="game-title">🎪 STARSHOT ARCADE 🎪</h1>
+          <p class="game-subtitle">Derrube as latas antes que o tempo acabe!</p>
+
+          <label class="field-label" for="player-name-input">Seu nome</label>
+          <input
+            id="player-name-input"
+            class="text-input"
+            type="text"
+            maxlength="16"
+            placeholder="Digite seu nome"
+            autocomplete="off"
+          />
+
+          <button id="play-button" class="game-button" disabled>JOGAR</button>
+          <p class="game-hint">Mova o mouse para mirar • Clique para atirar</p>
+        </section>
+
+        <section class="overlay-card leaderboard-card">
+          <h2 class="leaderboard-title">🏆 Top 5</h2>
+          <ol id="leaderboard-list" class="leaderboard-list">
+            <li class="leaderboard-loading">Carregando...</li>
+          </ol>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
