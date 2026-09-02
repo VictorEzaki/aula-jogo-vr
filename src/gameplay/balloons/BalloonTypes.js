@@ -18,24 +18,24 @@ export const BALLOON_TYPES = {
     id: BalloonTypeId.CLOWN_DELIGHT,
     modelUrl: 'assets/models/balloon-clown-delight.glb',
     scoreValue: 50,
-    scale: 0.32,
+    scale: 0.22,
   },
   [BalloonTypeId.PENALTY]: {
     id: BalloonTypeId.PENALTY,
     modelUrl: 'assets/models/balloon-carnival-penalty.glb',
     scoreValue: -10,
-    scale: 0.38,
+    scale: 0.22,
   },
   [BalloonTypeId.CARNIVAL_20]: {
     id: BalloonTypeId.CARNIVAL_20,
     modelUrl: 'assets/models/balloon-carnival-20.glb',
     scoreValue: 20,
-    scale: 0.38,
+    scale: 0.22,
   },
   [BalloonTypeId.SKY_ORB]: {
     id: BalloonTypeId.SKY_ORB,
     modelUrl: 'assets/models/balloon-sky-orb.glb',
     scoreValue: 10,
-    scale: 0.38,
+    scale: 0.22,
   },
 };

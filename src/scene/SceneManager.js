@@ -33,11 +33,12 @@ export class SceneManager {
     );
     // Posição de repouso usada apenas quando NÃO há sessão XR ativa
     // (modo desktop). Dentro do headset o XR sobrescreve isso.
-    this.camera.position.set(0, 1.6, 0);
+    this.camera.position.set(0, 1.4, 0);
 
     // Grupo que representa o jogador: câmera + (futuramente) controles
     // VR ficam aqui dentro, sempre perto da origem.
     this.playerRig = new THREE.Group();
+    this.playerRig.position.y = -0.4
     this.playerRig.add(this.camera);
     this.scene.add(this.playerRig);
 
