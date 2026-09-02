@@ -23,23 +23,21 @@ export class SceneManager {
     this.canvas = canvas;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0f1030);
-    this.scene.fog = new THREE.Fog(0x0f1030, 14, 30);
+    this.scene.background = new THREE.Color(0x0f1030); // cor de fallback, caso algum ângulo escape da esfera do céu
 
     this.camera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
       0.05,
-      100
+      600 // precisa alcançar além do raio da esfera do céu (~500 unidades), ou ela é cortada pelo far plane
     );
     // Posição de repouso usada apenas quando NÃO há sessão XR ativa
     // (modo desktop). Dentro do headset o XR sobrescreve isso.
-    this.camera.position.set(0, 1, 0);
+    this.camera.position.set(0, 1.6, 0);
 
     // Grupo que representa o jogador: câmera + (futuramente) controles
     // VR ficam aqui dentro, sempre perto da origem.
     this.playerRig = new THREE.Group();
-    this.playerRig.position.y = -0.2;
     this.playerRig.add(this.camera);
     this.scene.add(this.playerRig);
 
@@ -52,7 +50,7 @@ export class SceneManager {
     this.scene.add(this.worldGroup);
 
     // Olhar inicial em modo desktop, mirando a área do balcão de prêmios.
-    this.camera.lookAt(0, 1, -4);
+    this.camera.lookAt(0, 1.4, -4);
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,

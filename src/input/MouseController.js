@@ -37,7 +37,7 @@ export class MouseController {
   _handleMouseDown(e) {
     if (!this.enabled) return;
     if (e.button !== 0) return;
-    if (this._onSelect) this._onSelect(this.getRay());
+    if (this._onSelect) this._onSelect(this.getRay(), 'mouse');
   }
 
   /** Retorna o raio atual (origem na câmera, direção pelo NDC do mouse). */

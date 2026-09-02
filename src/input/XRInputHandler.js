@@ -26,10 +26,11 @@ export class XRInputHandler {
   }
 
   _buildController(index) {
+    const sourceId = `xr-controller-${index}`;
     const controller = this.renderer.xr.getController(index);
     controller.addEventListener('selectstart', () => {
       if (!this.enabled) return;
-      if (this._onSelect) this._onSelect(this._rayFromController(controller));
+      if (this._onSelect) this._onSelect(this._rayFromController(controller), sourceId);
     });
     this.playerRig.add(controller);
 

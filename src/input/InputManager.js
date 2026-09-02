@@ -18,17 +18,23 @@ export class InputManager {
     this.xr = new XRInputHandler(renderer, playerRig);
 
     this._onSelect = null;
-    this.mouse.onSelect((ray) => this._handleSelect(ray));
-    this.xr.onSelect((ray) => this._handleSelect(ray));
+    this.mouse.onSelect((ray, sourceId) => this._handleSelect(ray, sourceId));
+    this.xr.onSelect((ray, sourceId) => this._handleSelect(ray, sourceId));
   }
 
-  /** Registra o callback único chamado ao "atirar", venha de onde vier. */
+  /**
+   * Registra o callback único chamado ao "atirar", venha de onde
+   * vier. Recebe (ray, sourceId) — sourceId é 'mouse',
+   * 'xr-controller-0' ou 'xr-controller-1', usado por quem consome
+   * (Game.js) para aplicar um cooldown de disparo individual por
+   * mira, já que em VR os dois controles atiram de forma independente.
+   */
   onSelect(callback) {
     this._onSelect = callback;
   }
 
-  _handleSelect(ray) {
-    if (this._onSelect) this._onSelect(ray);
+  _handleSelect(ray, sourceId) {
+    if (this._onSelect) this._onSelect(ray, sourceId);
   }
 
   /** Habilita/desabilita a captura de disparos (ex: durante o menu). */
