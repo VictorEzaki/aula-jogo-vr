@@ -39,7 +39,7 @@ export class SceneManager {
     // Grupo que representa o jogador: câmera + (futuramente) controles
     // VR ficam aqui dentro, sempre perto da origem.
     this.playerRig = new THREE.Group();
-    this.playerRig.position.y = -0.3;
+    this.playerRig.position.y = -0.2;
     this.playerRig.add(this.camera);
     this.scene.add(this.playerRig);
 
