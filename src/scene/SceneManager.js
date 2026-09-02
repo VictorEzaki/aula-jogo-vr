@@ -42,15 +42,16 @@ export class SceneManager {
     this.playerRig.add(this.camera);
     this.scene.add(this.playerRig);
 
-    // Todo o cenário (barraca, ambiente, latas) fica deslocado para a
-    // frente do jogador, simulando a mesma distância que a versão
-    // desktop original tinha entre a câmera e a barraca.
+    // Todo o cenário (agora o ambiente do circo carregado via GLB)
+    // fica neste grupo. Diferente da versão anterior (barraca feita
+    // com primitivas), não aplicamos mais um deslocamento fixo aqui:
+    // CircusEnvironmentModel.js já reancora o próprio ambiente na
+    // origem do mundo ao carregar.
     this.worldGroup = new THREE.Group();
-    this.worldGroup.position.set(0, 0, -6.5);
     this.scene.add(this.worldGroup);
 
-    // Olhar inicial em modo desktop, mirando a prateleira de latas.
-    this.camera.lookAt(0, 1.4, -6.5);
+    // Olhar inicial em modo desktop, mirando a área do balcão de prêmios.
+    this.camera.lookAt(0, 1.4, -4);
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,

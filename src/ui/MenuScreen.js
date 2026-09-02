@@ -15,6 +15,7 @@ export class MenuScreen {
     this.leaderboardList = document.getElementById('leaderboard-list');
 
     this._onPlay = null;
+    this._isBusy = false;
 
     this.nameInput.addEventListener('input', () => this._updatePlayButtonState());
     this.playButton.addEventListener('click', () => this._handlePlayClick());
@@ -30,7 +31,14 @@ export class MenuScreen {
 
   _updatePlayButtonState() {
     const hasName = this.nameInput.value.trim().length > 0;
-    this.playButton.disabled = !hasName;
+    this.playButton.disabled = this._isBusy || !hasName;
+  }
+
+  /** Usado enquanto o modelo 3D da barraca ainda está carregando. */
+  setBusy(isBusy) {
+    this._isBusy = isBusy;
+    this.playButton.textContent = isBusy ? 'CARREGANDO...' : 'JOGAR';
+    this._updatePlayButtonState();
   }
 
   _handlePlayClick() {

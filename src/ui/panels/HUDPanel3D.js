@@ -41,7 +41,7 @@ export class HUDPanel3D {
       canvasHeight: 200,
       draw: (ctx, canvas) => drawBoard(ctx, canvas, 'PONTUAÇÃO', '0'),
     });
-    this.scorePanel.mesh.position.set(-2.7, 3.5, -0.35);
+    this.scorePanel.mesh.position.set(-1.5, 2.7, 0.5);
     this.group.add(this.scorePanel.mesh);
 
     this.timePanel = createTextPanel({
@@ -51,7 +51,7 @@ export class HUDPanel3D {
       canvasHeight: 200,
       draw: (ctx, canvas) => drawBoard(ctx, canvas, 'TEMPO', '60'),
     });
-    this.timePanel.mesh.position.set(2.7, 3.5, -0.35);
+    this.timePanel.mesh.position.set(1.5, 2.7, 0.5);
     this.group.add(this.timePanel.mesh);
   }
 

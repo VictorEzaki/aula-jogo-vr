@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import { Target } from './Target.js';
 
+// Posição estimada da prateleira de latas dentro do modelo GLB da
+// barraca (carnival-shooting-gallery.glb), calculada a partir do
+// bounding box do arquivo (ver ShootingStandModel.js) — mas SEM
+// renderização real para conferir visualmente. Trate como ponto de
+// partida: abra o jogo no navegador e ajuste estes três números até
+// as latas encostarem na prateleira do modelo.
+const TARGET_BASE_Y = 1.4; // altura da fileira de baixo da pirâmide
+const TARGET_BASE_Z = 0.3; // profundidade (em frente ao fundo da barraca)
+const TARGET_SPACING = 0.4; // as latas originais foram desenhadas para uma barraca mais larga
+
 /**
  * Cria e gerencia todas as latas da barraca: a pilha inicial,
  * a atualização de animações e as pequenas variações (respawn,
@@ -19,12 +29,12 @@ export class TargetManager {
   }
 
   _buildPyramid() {
-    // Pilha estilo "pirâmide": 4 - 3 - 2 - 1, apoiada na prateleira (y ~ 0.9)
+    // Pilha estilo "pirâmide": 4 - 3 - 2 - 1, apoiada na prateleira do modelo GLB.
     const rows = [4, 3, 2, 1];
-    const spacing = 0.5;
-    const rowHeight = 0.5;
-    const baseY = 0.9 + 0.27; // topo da prateleira + metade da altura da lata
-    const baseZ = -0.9;
+    const spacing = TARGET_SPACING;
+    const rowHeight = 0.4;
+    const baseY = TARGET_BASE_Y;
+    const baseZ = TARGET_BASE_Z;
 
     rows.forEach((count, rowIndex) => {
       const rowWidth = (count - 1) * spacing;

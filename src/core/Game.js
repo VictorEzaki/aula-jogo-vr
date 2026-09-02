@@ -2,10 +2,9 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 
 import { SceneManager } from '../scene/SceneManager.js';
 import { Lighting } from '../scene/Lighting.js';
-import { Environment } from '../scene/Environment.js';
-import { ShootingStand } from '../scene/ShootingStand.js';
+import { loadCircusEnvironment } from '../scene/CircusEnvironmentModel.js';
+import { loadPrizeBoothModel } from '../scene/PrizeBoothModel.js';
 
-import { TargetManager } from '../gameplay/TargetManager.js';
 import { Collision } from '../gameplay/Collision.js';
 import { Gun } from '../gameplay/Gun.js';
 
@@ -36,10 +35,21 @@ export class Game {
     const { scene, worldGroup, camera, playerRig, renderer } = this.sceneManager;
 
     new Lighting(scene);
-    new Environment(worldGroup);
-    new ShootingStand(worldGroup);
 
-    this.targetManager = new TargetManager(worldGroup);
+    // Os dois GLBs são carregados em paralelo. Guardamos a Promise
+    // combinada para esperar por ela antes de liberar a partida (ver
+    // _handlePlay), em vez de travar a construção do Game inteiro.
+    //
+    // As latas foram removidas por enquanto — o modelo de alvos ainda
+    // vai ser definido, então TargetManager/Collision seguem no
+    // projeto prontos para o próximo modelo, mas não instanciados.
+    this.modelReadyPromise = Promise.all([
+      loadCircusEnvironment(worldGroup),
+      loadPrizeBoothModel(worldGroup),
+    ]).catch((err) => {
+      console.error('Falha ao carregar os modelos 3D da cena:', err);
+    });
+
     this.collision = new Collision();
     this.gun = new Gun(camera);
 
@@ -85,16 +95,18 @@ export class Game {
     });
   }
 
-  _handlePlay(playerName) {
+  async _handlePlay(playerName) {
+    this.ui.menu.setBusy(true);
+    await this.modelReadyPromise;
+    this.ui.menu.setBusy(false);
+
     this.state.startMatch(playerName);
-    this.targetManager.reset();
     this.ui.hideMenu();
     this.ui.showHUD();
   }
 
   _handleRetry() {
     this.state.restartMatch();
-    this.targetManager.reset();
     this.ui.showHUD();
   }
 
@@ -122,14 +134,11 @@ export class Game {
   }
 
   _handleShot(ray) {
-    const hittable = this.targetManager.getHittableMeshes();
-    const hit = this.collision.raycastFromRay(ray, hittable);
-    if (!hit) return;
-
-    const target = this.targetManager.resolveTarget(hit.object);
-    if (target && target.hit()) {
-      this.state.addScore(target.scoreValue);
-    }
+    // Sem latas por enquanto — este é o ponto onde o próximo modelo de
+    // alvos entra: um TargetManager (ou equivalente) expondo
+    // getHittableMeshes()/resolveTarget(), do mesmo jeito que o
+    // TargetManager original já fazia. this.collision.raycastFromRay
+    // já está pronto para receber essa lista assim que ela existir.
   }
 
   _updateCrosshair() {
@@ -152,7 +161,6 @@ export class Game {
 
     if (this.state.state === GameStates.PLAYING) {
       this.state.tick(dt);
-      this.targetManager.update(dt);
       this.ui.updateHUD(this.state.score, this.state.timeLeft);
     }
 
