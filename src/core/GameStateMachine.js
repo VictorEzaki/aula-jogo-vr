@@ -4,7 +4,7 @@ export const GameStates = Object.freeze({
   GAMEOVER: 'GAMEOVER',
 });
 
-const MATCH_DURATION = 60;
+const MATCH_DURATION = 30;
 
 /**
  * Estado puro da aplicação: em qual tela estamos, nome do jogador,

@@ -20,7 +20,7 @@ import { ScoreService } from '../services/ScoreService.js';
 // "A arma deve conter um delay de meio segundo" — aplicado por fonte
 // de disparo (mouse, ou cada controle VR individualmente), não
 // globalmente. Ver _canShoot/_registerShot.
-const SHOT_COOLDOWN_MS = 500;
+const SHOT_COOLDOWN_MS = 0;
 
 /**
  * Ponto central que conecta todos os sistemas do jogo. Mantém o fluxo
