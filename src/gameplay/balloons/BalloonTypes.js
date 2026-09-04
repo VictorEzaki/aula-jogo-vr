@@ -22,19 +22,19 @@ export const BALLOON_TYPES = {
   },
   [BalloonTypeId.PENALTY]: {
     id: BalloonTypeId.PENALTY,
-    modelUrl: 'assets/models/balloon-carnival-penalty.glb',
+    modelUrl: 'assets/models/BalaoPenalidade5k.glb',
     scoreValue: -10,
     scale: 0.22,
   },
   [BalloonTypeId.CARNIVAL_20]: {
     id: BalloonTypeId.CARNIVAL_20,
-    modelUrl: 'assets/models/balloon-carnival-20.glb',
+    modelUrl: 'assets/models/BalaoAzul9k.glb',
     scoreValue: 20,
     scale: 0.22,
   },
   [BalloonTypeId.SKY_ORB]: {
     id: BalloonTypeId.SKY_ORB,
-    modelUrl: 'assets/models/balloon-sky-orb.glb',
+    modelUrl: 'assets/models/BalaoAmarelo5k.glb',
     scoreValue: 10,
     scale: 0.22,
   },
