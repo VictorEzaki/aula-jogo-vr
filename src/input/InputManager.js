@@ -51,4 +51,14 @@ export class InputManager {
   getActiveRays(isPresenting) {
     return isPresenting ? this.xr.getActiveRays() : [this.mouse.getRay()];
   }
+
+  /**
+   * Feedback tátil no controle que gerou o disparo (sourceId), usado
+   * pelo Game ao estourar um balão. Fora de VR (sourceId === 'mouse')
+   * não existe hardware para vibrar, então é um no-op silencioso.
+   */
+  triggerHaptic(sourceId, intensity, durationMs) {
+    if (sourceId === 'mouse') return;
+    this.xr.pulse(sourceId, intensity, durationMs);
+  }
 }

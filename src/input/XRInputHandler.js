@@ -18,6 +18,11 @@ export class XRInputHandler {
     this.enabled = true;
 
     this._onSelect = null;
+    // sourceId ('xr-controller-0'/'xr-controller-1') -> XRInputSource,
+    // guardado nos eventos 'connected'/'disconnected' do WebXR, único
+    // lugar de onde dá pra chegar no Gamepad.hapticActuators para o
+    // feedback tátil (ver pulse()).
+    this._inputSources = new Map();
     this.controllers = [0, 1].map((index) => this._buildController(index));
   }
 
@@ -31,6 +36,12 @@ export class XRInputHandler {
     controller.addEventListener('selectstart', () => {
       if (!this.enabled) return;
       if (this._onSelect) this._onSelect(this._rayFromController(controller), sourceId);
+    });
+    controller.addEventListener('connected', (event) => {
+      this._inputSources.set(sourceId, event.data);
+    });
+    controller.addEventListener('disconnected', () => {
+      this._inputSources.delete(sourceId);
     });
     this.playerRig.add(controller);
 
@@ -70,5 +81,20 @@ export class XRInputHandler {
   /** Raios atuais dos dois controles, usados para destacar botões ao mirar (hover). */
   getActiveRays() {
     return this.controllers.map((c) => this._rayFromController(c));
+  }
+
+  /**
+   * Dispara um pulso de vibração no controle físico correspondente a
+   * sourceId ('xr-controller-0'/'xr-controller-1'), via
+   * Gamepad.hapticActuators (WebXR Gamepad Haptics). Não faz nada se
+   * o controle não estiver conectado ou não suportar haptics — nem
+   * todo hardware/navegador expõe hapticActuators, então isso nunca
+   * deve quebrar o disparo em si.
+   */
+  pulse(sourceId, intensity, durationMs) {
+    const inputSource = this._inputSources.get(sourceId);
+    const actuator = inputSource?.gamepad?.hapticActuators?.[0];
+    if (!actuator) return;
+    actuator.pulse(intensity, durationMs);
   }
 }

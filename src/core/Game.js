@@ -9,6 +9,7 @@ import { loadSky, followCamera } from '../scene/SkyModel.js';
 import { Collision } from '../gameplay/Collision.js';
 import { BalloonSpawner } from '../gameplay/balloons/BalloonSpawner.js';
 import { preloadBalloonModels } from '../gameplay/balloons/BalloonModelLoader.js';
+import { BalloonTypeId } from '../gameplay/balloons/BalloonTypes.js';
 
 import { InputManager } from '../input/InputManager.js';
 import { UIManager } from '../ui/UIManager.js';
@@ -21,6 +22,13 @@ import { ScoreService } from '../services/ScoreService.js';
 // de disparo (mouse, ou cada controle VR individualmente), não
 // globalmente. Ver _canShoot/_registerShot.
 const SHOT_COOLDOWN_MS = 0;
+
+// Feedback tátil ao estourar um balão, aplicado só no controle que
+// disparou (ver Game._handleShot/InputManager.triggerHaptic). Balões
+// que somam pontuação vibram curto e leve; o balão de penalidade
+// vibra mais forte e por mais tempo, para reforçar que foi um erro.
+const HAPTIC_POSITIVE = { intensity: 0.3, durationMs: 40 };
+const HAPTIC_PENALTY = { intensity: 1.0, durationMs: 220 };
 
 /**
  * Ponto central que conecta todos os sistemas do jogo. Mantém o fluxo
@@ -142,7 +150,7 @@ export class Game {
         // painéis de UI (GAMEOVER) continuam instantâneos.
         if (!this._canShoot(sourceId)) return;
         this._registerShot(sourceId);
-        this._handleShot(ray);
+        this._handleShot(ray, sourceId);
         break;
       case GameStates.GAMEOVER:
         this.ui.handleSelect(ray);
@@ -162,7 +170,7 @@ export class Game {
     this._lastShotAt.set(sourceId, performance.now());
   }
 
-  _handleShot(ray) {
+  _handleShot(ray, sourceId) {
     const hittable = this.balloonSpawner.getHittableMeshes();
     const hit = this.collision.raycastFromRay(ray, hittable);
     if (!hit) return;
@@ -170,8 +178,22 @@ export class Game {
     const balloon = this.balloonSpawner.resolveBalloon(hit.object);
     if (!balloon) return;
 
+    const typeId = balloon.typeId;
     const points = this.balloonSpawner.popBalloon(balloon);
     this.state.addScore(points);
+    this._triggerPopHaptic(sourceId, typeId);
+  }
+
+  /**
+   * Vibra apenas o controle que estourou o balão (sourceId vem do
+   * InputManager/XRInputHandler, então já identifica qual dos dois
+   * controles foi). Balão de penalidade usa um pulso mais forte e
+   * mais longo; os demais (que somam pontuação) usam um pulso curto.
+   */
+  _triggerPopHaptic(sourceId, typeId) {
+    const { intensity, durationMs } =
+      typeId === BalloonTypeId.PENALTY ? HAPTIC_PENALTY : HAPTIC_POSITIVE;
+    this.input.triggerHaptic(sourceId, intensity, durationMs);
   }
 
   _updateCrosshair() {
