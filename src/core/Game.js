@@ -17,6 +17,8 @@ import { UIManager } from '../ui/UIManager.js';
 import { GameStateMachine, GameStates } from './GameStateMachine.js';
 import { GameLoop } from './GameLoop.js';
 import { ScoreService } from '../services/ScoreService.js';
+import { AudioManager } from './../audio/AudioManager.js';
+import { CountdownController } from './../CountdownController.js';
 
 // "A arma deve conter um delay de meio segundo" — aplicado por fonte
 // de disparo (mouse, ou cada controle VR individualmente), não
@@ -87,9 +89,30 @@ export class Game {
 
     this.loop = new GameLoop(renderer, (dt) => this.update(dt));
 
+    this.audioManager = new AudioManager();
+    this.audioManager.startThemeOnEntry(); // toca a partir da entrada no site
+
+    this.countdown = new CountdownController({
+      onTick: (text) => this._onCountdownTick(text),
+      onComplete: () => this._onCountdownComplete(),
+    });
+    this._pendingPlayerName = '';
+
     this._setupVRButton(renderer);
     this._wireEvents();
     this.ui.showMenu();
+  }
+
+  _onCountdownTick(text) {
+    this.ui.updateCountdownText(text);
+  }
+
+  /** Chamado quando a contagem 3-2-1 termina — é aqui que a partida de fato começa. */
+  _onCountdownComplete() {
+    this.ui.hideCountdown();
+    this.state.startMatch(this._pendingPlayerName);
+    this.balloonSpawner.reset();
+    this.ui.showHUD();
   }
 
   _setupVRButton(renderer) {
@@ -109,6 +132,7 @@ export class Game {
       // Ponto de integração com o backend: disparado automaticamente
       // ao fim de toda partida, incluindo em "Tentar novamente".
       ScoreService.saveScore(playerName, score);
+      this.audioManager.restoreThemeVolume();
 
       this.ui.showGameOver(score, {
         onRetry: () => this._handleRetry(),
@@ -122,16 +146,24 @@ export class Game {
     await this.modelReadyPromise;
     this.ui.menu.setBusy(false);
 
-    this.state.startMatch(playerName);
-    this.balloonSpawner.reset();
+    this._pendingPlayerName = playerName;
     this.ui.hideMenu();
-    this.ui.showHUD();
+    this._startCountdown();
   }
 
   _handleRetry() {
-    this.state.restartMatch();
-    this.balloonSpawner.reset();
-    this.ui.showHUD();
+    // Mantém o mesmo nome de jogador (mesmo espírito de restartMatch()),
+    // mas o início efetivo só acontece quando a contagem terminar
+    // (ver _onCountdownComplete), então usamos startMatch lá.
+    this._pendingPlayerName = this.state.playerName;
+    this._startCountdown();
+  }
+
+  /** Abaixa a música gradualmente e inicia o 3-2-1 antes da partida (usado por "Jogar" e "Tentar novamente"). */
+  _startCountdown() {
+    this.audioManager.duckThemeForGameplay();
+    this.ui.showCountdown();
+    this.countdown.start();
   }
 
   _handleBackToMenu() {
@@ -139,6 +171,7 @@ export class Game {
     if (renderer.xr.isPresenting) {
       renderer.xr.getSession().end();
     }
+    this.audioManager.restoreThemeVolume();
     this.state.backToMenu();
     this.ui.showMenu(); // já busca o leaderboard atualizado no ScoreService
   }
@@ -180,6 +213,7 @@ export class Game {
 
     const typeId = balloon.typeId;
     const points = this.balloonSpawner.popBalloon(balloon);
+    if (points !== 0) this.audioManager.playBalloonPopSfx(points);
     this.state.addScore(points);
     this._triggerPopHaptic(sourceId, typeId);
   }

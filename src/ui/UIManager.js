@@ -1,6 +1,7 @@
 import { MenuScreen } from './MenuScreen.js';
 import { HUDPanel3D } from './panels/HUDPanel3D.js';
 import { GameOverPanel3D } from './panels/GameOverPanel3D.js';
+import { CountdownPanel3D } from './panels/CountdownPanel3D.js';
 
 /**
  * Fachada única para as três telas do jogo. O Game nunca manipula
@@ -15,11 +16,13 @@ export class UIManager {
     this.menu = new MenuScreen();
     this.hud = new HUDPanel3D(worldGroup);
     this.gameOver = new GameOverPanel3D(scene);
+    this.countdown = new CountdownPanel3D(scene);
   }
 
   showMenu() {
     this.hud.hide();
     this.gameOver.hide();
+    this.countdown.hide();
     return this.menu.show();
   }
 
@@ -29,7 +32,22 @@ export class UIManager {
 
   showHUD() {
     this.gameOver.hide();
+    this.countdown.hide();
     this.hud.show();
+  }
+
+  /** Mostra o painel 3D de contagem regressiva (e esconde o Game Over, no caso do "Tentar novamente"). */
+  showCountdown() {
+    this.gameOver.hide();
+    this.countdown.show();
+  }
+
+  updateCountdownText(text) {
+    this.countdown.setText(text);
+  }
+
+  hideCountdown() {
+    this.countdown.hide();
   }
 
   updateHUD(score, timeLeft) {
