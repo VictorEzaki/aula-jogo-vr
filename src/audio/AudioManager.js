@@ -14,13 +14,13 @@ const SFX_POOL_SIZE = 4; // instâncias por som, para permitir pops sobrepostos
 // Mapa scoreValue (balão) -> arquivo de efeito sonoro.
 // Ajuste os caminhos caso os arquivos fiquem em outra pasta dentro de /public.
 const BALLOON_SFX_MAP = {
-  '50': './../../public/audio/balloon_clown.wav',
-  '-10': './../../public/audio/sound_penalidade.mp3',
-  '10': './../../public/audio/ballon_pop1.wav',
-  '20': './../../public/audio/balloon_pop.mp3',
+  '50': '/audio/balloon_clown.wav',
+  '-10': '/audio/sound_penalidade.mp3',
+  '10': '/audio/ballon_pop1.wav',
+  '20': '/audio/balloon_pop.mp3',
 };
 
-const THEME_SRC = './../../public/audio/theme.mp3';
+const THEME_SRC = '/audio/theme.mp3';
 
 export class AudioManager {
   constructor() {
