@@ -82,6 +82,8 @@ html, body {
   justify-content: center;
   background: rgba(10, 10, 25, 0.55);
   z-index: 100;
+  overflow-y: auto;
+  padding: 32px 16px;
 }
 
 .overlay-screen.hidden {
@@ -90,9 +92,20 @@ html, body {
 
 .menu-cards {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 920px;
+  margin: auto;
+}
+
+.menu-top-row {
+  display: flex;
   gap: 24px;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
 .overlay-card {
@@ -104,6 +117,16 @@ html, body {
   text-align: center;
   box-shadow: 0 0 30px rgba(255, 179, 71, 0.35);
   min-width: 280px;
+}
+
+.menu-top-row .overlay-card {
+  flex: 1 1 320px;
+}
+
+/* Card de instruções ocupa a largura toda, abaixo dos dois cards acima. */
+.instructions-card {
+  width: 100%;
+  text-align: left;
 }
 
 .game-title {
@@ -165,12 +188,6 @@ html, body {
   cursor: not-allowed;
 }
 
-.game-hint {
-  margin-top: 14px;
-  font-size: 0.8rem;
-  color: #9b8fc7;
-}
-
 .leaderboard-title {
   font-size: 1.2rem;
   color: #ffe14d;
@@ -205,6 +222,138 @@ html, body {
   color: #9b8fc7;
   text-align: center;
   justify-content: center;
+}
+
+/* ---------- Card 3: Instruções & Pontuação ---------- */
+.instructions-title {
+  font-size: 1.3rem;
+  color: #ffe14d;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.instructions-columns {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.instructions-basic,
+.instructions-scoring {
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+
+.instructions-subtitle {
+  font-size: 1rem;
+  color: #4dd0e1;
+  margin-bottom: 12px;
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instructions-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #cbd5f5;
+}
+
+.instructions-list strong {
+  color: #fff6da;
+}
+
+.instructions-icon {
+  flex-shrink: 0;
+  font-size: 1.15rem;
+}
+
+.scoring-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scoring-table td {
+  padding: 9px 6px;
+  font-size: 0.92rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.scoring-table tr:last-child td {
+  border-bottom: none;
+}
+
+.scoring-name {
+  color: #fff6da;
+}
+
+.scoring-value {
+  text-align: right;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.scoring-positive {
+  color: #4dd0e1;
+}
+
+.scoring-negative {
+  color: #ff6b6b;
+}
+
+/* ---------- Botão de mutar/desmutar a música ---------- */
+.mute-button {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #ffb347;
+  background: linear-gradient(180deg, #2b1d4a, #1a1030);
+  color: #fff6da;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(255, 179, 71, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mute-button:hover {
+  transform: translateY(-2px);
+}
+
+.mute-button:focus-visible {
+  outline: 2px solid #ffe14d;
+  outline-offset: 2px;
+}
+
+.mute-button.is-muted {
+  border-color: #6b5b95;
+  color: #9b8fc7;
+}
+
+/* Responsivo: empilha os dois cards do topo e as colunas do card de instruções em telas estreitas */
+@media (max-width: 680px) {
+  .menu-top-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .instructions-columns {
+    flex-direction: column;
+  }
 }
 
 /* Botão de entrar em VR (injetado pelo VRButton do Three.js) */

@@ -4,7 +4,10 @@ export const GameStates = Object.freeze({
   GAMEOVER: 'GAMEOVER',
 });
 
-const MATCH_DURATION = 30;
+// Exportada para que a UI (ex: card de instruções do menu) sempre
+// mostre o valor real usado pela partida, em vez de um número fixo
+// digitado à mão em outro arquivo.
+export const MATCH_DURATION = 60;
 
 /**
  * Estado puro da aplicação: em qual tela estamos, nome do jogador,

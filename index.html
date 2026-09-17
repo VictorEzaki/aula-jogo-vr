@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StarShot Arcade - Tiro ao Alvo VR</title>
+  <title>ADS 2026 - CLOWN SHOT</title>
   <link rel="stylesheet" href="style.css" />
 
   <script type="importmap">
@@ -27,6 +27,15 @@
     </div>
 
     <!--
+      Botão de mutar/desmutar a música tema. Fica fora de #menu-screen
+      de propósito: a música toca em todas as telas (menu, contagem,
+      partida, game over), então o controle precisa ficar visível e
+      clicável em qualquer uma delas. Começa mostrando o ícone de
+      mutado — ver MuteButton.js e AudioManager.initTheme().
+    -->
+    <button id="mute-button" class="mute-button" type="button" aria-pressed="false" aria-label="Ativar música" title="Ativar música">🔇</button>
+
+    <!--
       Tela de menu em DOM. Fica ativa apenas ANTES de entrar em VR
       (digitar nome e ver o leaderboard exige teclado, o que não tem
       um equivalente prático em espaço 3D). Uma vez que a partida
@@ -35,29 +44,55 @@
     -->
     <div id="menu-screen" class="overlay-screen">
       <div class="menu-cards">
-        <section class="overlay-card login-card">
-          <h1 class="game-title">🎪 STARSHOT ARCADE 🎪</h1>
-          <p class="game-subtitle">Derrube as latas antes que o tempo acabe!</p>
+        <div class="menu-top-row">
+          <section class="overlay-card login-card">
+            <h1 class="game-title">🎪 STARSHOT ARCADE 🎪</h1>
+            <p class="game-subtitle">Derrube os balões antes que o tempo acabe!</p>
 
-          <label class="field-label" for="player-name-input">Seu nome</label>
-          <input
-            id="player-name-input"
-            class="text-input"
-            type="text"
-            maxlength="16"
-            placeholder="Digite seu nome"
-            autocomplete="off"
-          />
+            <label class="field-label" for="player-name-input">Seu nome</label>
+            <input
+              id="player-name-input"
+              class="text-input"
+              type="text"
+              maxlength="16"
+              placeholder="Digite seu nome"
+              autocomplete="off"
+            />
 
-          <button id="play-button" class="game-button" disabled>JOGAR</button>
-          <p class="game-hint">Mova o mouse para mirar • Clique para atirar</p>
-        </section>
+            <button id="play-button" class="game-button" disabled>JOGAR</button>
+          </section>
 
-        <section class="overlay-card leaderboard-card">
-          <h2 class="leaderboard-title">🏆 Top 5</h2>
-          <ol id="leaderboard-list" class="leaderboard-list">
-            <li class="leaderboard-loading">Carregando...</li>
-          </ol>
+          <section class="overlay-card leaderboard-card">
+            <h2 class="leaderboard-title">🏆 Top 5</h2>
+            <ol id="leaderboard-list" class="leaderboard-list">
+              <li class="leaderboard-loading">Carregando...</li>
+            </ol>
+          </section>
+        </div>
+
+        <section class="overlay-card instructions-card">
+          <h2 class="instructions-title">📋 Instruções &amp; Pontuação</h2>
+
+          <div class="instructions-columns">
+            <div class="instructions-basic">
+              <h3 class="instructions-subtitle">Como jogar</h3>
+              <ul class="instructions-list">
+                <li><span class="instructions-icon" aria-hidden="true">🎯</span><span><strong>Mirar:</strong> mova o mouse (desktop) ou aponte a mira do controle / o olhar (VR).</span></li>
+                <li><span class="instructions-icon" aria-hidden="true">🔫</span><span><strong>Atirar:</strong> clique com o botão esquerdo do mouse ou pressione o gatilho do controle de VR.</span></li>
+                <li><span class="instructions-icon" aria-hidden="true">⏱️</span><span><strong>Tempo:</strong> cada partida dura <strong id="instructions-duration">60</strong> segundos — pontue o máximo possível antes que o tempo acabe!</span></li>
+              </ul>
+            </div>
+
+            <div class="instructions-scoring">
+              <h3 class="instructions-subtitle">Pontuação dos balões</h3>
+              <table class="scoring-table">
+                <tbody id="scoring-table-body">
+                  <!-- Preenchida em runtime a partir de BalloonTypes.js, para nunca ficar
+                       dessincronizada dos valores reais usados pelo jogo (ver MenuScreen.js). -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </div>
     </div>

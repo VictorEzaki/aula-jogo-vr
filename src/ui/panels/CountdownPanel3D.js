@@ -25,9 +25,9 @@ function drawCountdown(ctx, canvas, text) {
 export class CountdownPanel3D {
   constructor(scene) {
     this.panel = createTextPanel({
-      width: 1.2,
+      width: 2,
       height: 1.2,
-      canvasWidth: 400,
+      canvasWidth: 800,
       canvasHeight: 400,
       draw: (ctx, canvas) => drawCountdown(ctx, canvas, '3'),
     });

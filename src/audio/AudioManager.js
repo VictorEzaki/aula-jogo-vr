@@ -27,8 +27,6 @@ export class AudioManager {
     this._theme = null;
     this._sfxPool = new Map(); // scoreValue (string) -> HTMLAudioElement[]
     this._fadeRafId = null;
-    this._themeStarted = false;
-    this._pendingAutoplayHandler = null;
 
     this._buildTheme();
     this._buildSfxPool();
@@ -39,6 +37,8 @@ export class AudioManager {
     audio.loop = true;
     audio.volume = THEME_VOLUME_MENU;
     audio.preload = 'auto';
+    // Começa sempre mutado — ver initTheme().
+    audio.muted = true;
     this._theme = audio;
   }
 
@@ -56,45 +56,50 @@ export class AudioManager {
   }
 
   /**
-   * Chame assim que o jogador acessa o site (ex: no bootstrap do app).
-   * Navegadores bloqueiam autoplay com som até haver uma interação do
-   * usuário. Este método tenta tocar imediatamente e, se for bloqueado,
-   * agenda o início para o primeiro clique/toque/tecla.
+   * Chame assim que o app inicializa (bootstrap, antes mesmo do menu).
+   * Navegadores bloqueiam autoplay COM som, mas praticamente todos
+   * permitem autoplay de mídia MUTADA — inclusive dentro de uma sessão
+   * WebXR, onde o esquema antigo (tentar tocar e, se falhar, esperar o
+   * primeiro pointerdown/keydown/touchstart na window) não era confiável:
+   * o gatilho dos controles de VR dispara 'selectstart' no controller,
+   * não um evento de ponteiro/teclado na window, então esse listener
+   * global às vezes nunca era acionado e a música nunca começava.
+   *
+   * Com o áudio já tocando (mutado) desde o início, o botão de
+   * mutar/desmutar só precisa alternar `.muted` — e esse clique real
+   * do jogador é sempre um gesto de usuário válido para desbloquear o
+   * áudio, tanto em desktop quanto dentro do headset.
    */
-  startThemeOnEntry() {
-    if (this._themeStarted) return;
-
-    this._theme.play()
-      .then(() => {
-        this._themeStarted = true;
-        this._removePendingAutoplayHandler();
-      })
-      .catch(() => {
-        this._armPendingAutoplayHandler();
-      });
+  initTheme() {
+    this._theme.muted = true;
+    this._theme.play().catch(() => {
+      // Se até o autoplay mutado for bloqueado, não há problema: o
+      // primeiro clique em "desmutar" (setMuted(false)) chama play()
+      // novamente, e nesse momento é um gesto direto do usuário.
+    });
   }
 
-  _armPendingAutoplayHandler() {
-    if (this._pendingAutoplayHandler) return;
-    const handler = () => {
-      this._theme.play()
-        .then(() => { this._themeStarted = true; })
-        .catch(() => {});
-      this._removePendingAutoplayHandler();
-    };
-    this._pendingAutoplayHandler = handler;
-    ['pointerdown', 'keydown', 'touchstart'].forEach((evt) =>
-      window.addEventListener(evt, handler, { once: true })
-    );
+  /** true = música mutada. Reflete o estado exibido no botão 🔇/🔊. */
+  isMuted() {
+    return this._theme.muted;
   }
 
-  _removePendingAutoplayHandler() {
-    if (!this._pendingAutoplayHandler) return;
-    const handler = this._pendingAutoplayHandler;
-    ['pointerdown', 'keydown', 'touchstart'].forEach((evt) =>
-      window.removeEventListener(evt, handler)
-    );
-    this._pendingAutoplayHandler = null;
+  /**
+   * Alterna mudo/som. Chamado pelo botão do canto superior direito.
+   * Ao desmutar, garante que a música esteja realmente tocando (caso
+   * o autoplay mutado inicial tenha sido bloqueado) — como isso roda
+   * dentro do handler de clique do jogador, o play() aqui é permitido.
+   */
+  setMuted(muted) {
+    this._theme.muted = muted;
+    if (!muted && this._theme.paused) {
+      this._theme.play().catch(() => {});
+    }
+  }
+
+  toggleMute() {
+    this.setMuted(!this.isMuted());
+    return this.isMuted();
   }
 
   /** Abaixa a música gradualmente. Chame ao iniciar a contagem regressiva. */
@@ -145,7 +150,6 @@ export class AudioManager {
   }
 
   dispose() {
-    this._removePendingAutoplayHandler();
     if (this._fadeRafId !== null) cancelAnimationFrame(this._fadeRafId);
     this._theme.pause();
   }

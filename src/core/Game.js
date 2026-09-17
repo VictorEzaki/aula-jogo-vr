@@ -13,6 +13,7 @@ import { BalloonTypeId } from '../gameplay/balloons/BalloonTypes.js';
 
 import { InputManager } from '../input/InputManager.js';
 import { UIManager } from '../ui/UIManager.js';
+import { MuteButton } from '../ui/MuteButton.js';
 
 import { GameStateMachine, GameStates } from './GameStateMachine.js';
 import { GameLoop } from './GameLoop.js';
@@ -90,7 +91,15 @@ export class Game {
     this.loop = new GameLoop(renderer, (dt) => this.update(dt));
 
     this.audioManager = new AudioManager();
-    this.audioManager.startThemeOnEntry(); // toca a partir da entrada no site
+    this.audioManager.initTheme(); // começa tocando mutada assim que a página carrega
+
+    // Botão do canto superior direito: única forma confiável de
+    // desbloquear áudio com som tanto em desktop quanto dentro do
+    // headset (ver comentário em AudioManager.initTheme).
+    this.muteButton = new MuteButton({
+      initialMuted: this.audioManager.isMuted(),
+      onToggle: (muted) => this.audioManager.setMuted(muted),
+    });
 
     this.countdown = new CountdownController({
       onTick: (text) => this._onCountdownTick(text),
