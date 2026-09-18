@@ -5,7 +5,7 @@
 // existir (ex: assim que o app carrega, no menu).
 
 const THEME_VOLUME_MENU = 0.6;      // volume da música fora da partida (menu)
-const THEME_VOLUME_PLAYING = 0.15;  // volume "baixo" durante a contagem/partida
+const THEME_VOLUME_PLAYING = 0.10;  // volume "baixo" durante a contagem/partida
 const THEME_FADE_DURATION_MS = 1500; // duração da transição gradual de volume
 
 const SFX_VOLUME = 0.9;
@@ -15,9 +15,9 @@ const SFX_POOL_SIZE = 4; // instâncias por som, para permitir pops sobrepostos
 // Ajuste os caminhos caso os arquivos fiquem em outra pasta dentro de /public.
 const BALLOON_SFX_MAP = {
   '50': '/audio/balloon_clown.wav',
-  '-10': '/audio/sound_penalidade.mp3',
-  '10': '/audio/ballon_pop1.wav',
-  '20': '/audio/balloon_pop.mp3',
+  '-10': '/audio/sound_penalidade.wav',
+  '10': '/audio/balloon_pop.wav',
+  '20': '/audio/balloon_pop.wav',
 };
 
 const THEME_SRC = '/audio/theme.mp3';
@@ -79,7 +79,7 @@ export class AudioManager {
     });
   }
 
-  /** true = música mutada. Reflete o estado exibido no botão 🔇/🔊. */
+  /** true = música mutada. Reflete o estado exibido no botão. */
   isMuted() {
     return this._theme.muted;
   }
