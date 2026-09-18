@@ -221,10 +221,12 @@ export class Game {
     if (!balloon) return;
 
     const typeId = balloon.typeId;
+    const popPosition = balloon.mesh.position.clone();
     const points = this.balloonSpawner.popBalloon(balloon);
     if (points !== 0) this.audioManager.playBalloonPopSfx(points);
     this.state.addScore(points);
     this._triggerPopHaptic(sourceId, typeId);
+    this.ui.spawnScorePopup(popPosition, points);
   }
 
   /**
@@ -261,6 +263,7 @@ export class Game {
       this.state.tick(dt);
       this.balloonSpawner.update(dt);
       this.ui.updateHUD(this.state.score, this.state.timeLeft);
+      this.ui.updateScorePopups(dt, camera);
     }
 
     if (this.state.state === GameStates.GAMEOVER) {

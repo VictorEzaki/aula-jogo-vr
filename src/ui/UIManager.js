@@ -2,6 +2,7 @@ import { MenuScreen } from './MenuScreen.js';
 import { HUDPanel3D } from './panels/HUDPanel3D.js';
 import { GameOverPanel3D } from './panels/GameOverPanel3D.js';
 import { CountdownPanel3D } from './panels/CountdownPanel3D.js';
+import { ScorePopupManager } from './panels/ScorePopupManager.js';
 
 /**
  * Fachada única para as três telas do jogo. O Game nunca manipula
@@ -17,12 +18,14 @@ export class UIManager {
     this.hud = new HUDPanel3D(worldGroup);
     this.gameOver = new GameOverPanel3D(scene);
     this.countdown = new CountdownPanel3D(scene);
+    this.scorePopups = new ScorePopupManager(worldGroup);
   }
 
   showMenu() {
     this.hud.hide();
     this.gameOver.hide();
     this.countdown.hide();
+    this.scorePopups.clear();
     return this.menu.show();
   }
 
@@ -33,6 +36,7 @@ export class UIManager {
   showHUD() {
     this.gameOver.hide();
     this.countdown.hide();
+    this.scorePopups.clear(); // evita popup "fantasma" sobrando de uma partida anterior
     this.hud.show();
   }
 
@@ -52,6 +56,16 @@ export class UIManager {
 
   updateHUD(score, timeLeft) {
     this.hud.update(score, timeLeft);
+  }
+
+  /** Dispara o "+50"/"-10" flutuante na posição onde o balão foi estourado. */
+  spawnScorePopup(position, points) {
+    this.scorePopups.spawn(position, points);
+  }
+
+  /** Deve ser chamado todo frame durante PLAYING para animar os popups ativos. */
+  updateScorePopups(dt, camera) {
+    this.scorePopups.update(dt, camera);
   }
 
   showGameOver(finalScore, handlers) {
