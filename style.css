@@ -232,16 +232,12 @@ html, body {
   margin-bottom: 18px;
 }
 
-.instructions-columns {
+/* Seções empilhadas verticalmente: instruções de como jogar em cima,
+   pontuação de cada balão embaixo (ver index.html). */
+.instructions-sections {
   display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.instructions-basic,
-.instructions-scoring {
-  flex: 1 1 280px;
-  min-width: 240px;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .instructions-subtitle {
@@ -275,28 +271,53 @@ html, body {
   font-size: 1.15rem;
 }
 
-.scoring-table {
+/* Grid com o modelo 3D de cada balão (renderizado em
+   BalloonThumbnailRenderer.js) + a pontuação correspondente. O modelo
+   substitui o antigo ícone+nome em texto — ver MenuScreen.js. */
+.scoring-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.scoring-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 179, 71, 0.25);
+}
+
+.scoring-thumb-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 179, 71, 0.18), transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoring-thumb {
   width: 100%;
-  border-collapse: collapse;
+  height: 100%;
+  object-fit: contain;
+  /* Enquanto a imagem ainda não carregou (src vazio), some em vez de
+     mostrar o ícone de "imagem quebrada" do navegador. */
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.scoring-table td {
-  padding: 9px 6px;
-  font-size: 0.92rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.scoring-table tr:last-child td {
-  border-bottom: none;
-}
-
-.scoring-name {
-  color: #fff6da;
+.scoring-thumb[src] {
+  opacity: 1;
 }
 
 .scoring-value {
-  text-align: right;
   font-weight: bold;
+  font-size: 0.95rem;
   white-space: nowrap;
 }
 
@@ -344,15 +365,16 @@ html, body {
   color: #9b8fc7;
 }
 
-/* Responsivo: empilha os dois cards do topo e as colunas do card de instruções em telas estreitas */
+/* Responsivo: empilha os dois cards do topo e reduz o grid de
+   pontuação para 2 colunas em telas estreitas */
 @media (max-width: 680px) {
   .menu-top-row {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .instructions-columns {
-    flex-direction: column;
+  .scoring-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

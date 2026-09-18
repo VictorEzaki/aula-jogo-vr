@@ -1,16 +1,21 @@
 import { ScoreService } from '../services/ScoreService.js';
 import { BalloonTypeId, BALLOON_TYPES } from '../gameplay/balloons/BalloonTypes.js';
 import { MATCH_DURATION } from '../core/GameStateMachine.js';
+import { generateBalloonThumbnails } from './BalloonThumbnailRenderer.js';
 
-// Ordem de exibição + ícone/nome amigável para cada balão no card de
-// instruções. O valor de pontos em si NUNCA é digitado aqui — vem de
-// BALLOON_TYPES (a mesma fonte que o jogo usa para pontuar de verdade),
-// então a tabela nunca fica desatualizada em relação à regra real.
+// Ordem de exibição + nome amigável de cada balão no card de
+// instruções. O nome não é mais exibido ao lado (o próprio modelo 3D
+// renderizado já identifica o balão visualmente — ver
+// BalloonThumbnailRenderer.js), mas continua servindo de alt/aria
+// para leitores de tela. O valor de pontos em si NUNCA é digitado
+// aqui — vem de BALLOON_TYPES (a mesma fonte que o jogo usa para
+// pontuar de verdade), então a lista nunca fica desatualizada em
+// relação à regra real.
 const BALLOON_DISPLAY_ORDER = [
-  { id: BalloonTypeId.SKY_ORB, icon: '🎈', label: 'Sky Orb (Padrão)' },
-  { id: BalloonTypeId.CARNIVAL_20, icon: '🔵', label: 'Carnival 20' },
-  { id: BalloonTypeId.CLOWN_DELIGHT, icon: '🤡', label: 'Clown Delight' },
-  { id: BalloonTypeId.PENALTY, icon: '💀', label: 'Penalidade' },
+  { id: BalloonTypeId.SKY_ORB, label: 'Sky Orb (Padrão)' },
+  { id: BalloonTypeId.CARNIVAL_20, label: 'Carnival 20' },
+  { id: BalloonTypeId.CLOWN_DELIGHT, label: 'Clown Delight' },
+  { id: BalloonTypeId.PENALTY, label: 'Penalidade' },
 ];
 
 /**
@@ -28,7 +33,7 @@ export class MenuScreen {
     this.playButton = document.getElementById('play-button');
     this.leaderboardList = document.getElementById('leaderboard-list');
     this.matchDurationEl = document.getElementById('instructions-duration');
-    this.scoringTableBody = document.getElementById('scoring-table-body');
+    this.scoringGrid = document.getElementById('scoring-grid');
 
     this._onPlay = null;
     this._isBusy = false;
@@ -40,6 +45,10 @@ export class MenuScreen {
     });
 
     // Estático (não muda em runtime), então só precisa rodar uma vez.
+    // Não é aguardado aqui de propósito: o texto (duração da partida)
+    // aparece de imediato, e o grid de pontuação é preenchido assim
+    // que os thumbnails dos balões terminam de renderizar, sem
+    // travar a construção da tela de menu.
     this._renderInstructions();
   }
 
@@ -76,29 +85,50 @@ export class MenuScreen {
     this.root.classList.add('hidden');
   }
 
-  /** Preenche o tempo de partida e a tabela de pontuação do card de instruções. */
-  _renderInstructions() {
+  /** Preenche o tempo de partida e o grid de pontuação (com o modelo 3D de cada balão) do card de instruções. */
+  async _renderInstructions() {
     if (this.matchDurationEl) {
       this.matchDurationEl.textContent = String(MATCH_DURATION);
     }
 
-    if (!this.scoringTableBody) return;
-    this.scoringTableBody.innerHTML = '';
+    if (!this.scoringGrid) return;
+    this.scoringGrid.innerHTML = '';
 
-    BALLOON_DISPLAY_ORDER.forEach(({ id, icon, label }) => {
+    // Monta os itens já com o valor em pontos (isso não depende do
+    // modelo 3D ter carregado) e um placeholder no lugar da imagem,
+    // trocado pelo thumbnail real assim que ele fica pronto — assim a
+    // pontuação aparece de imediato, sem esperar o load dos GLBs.
+    const imageEls = {};
+    BALLOON_DISPLAY_ORDER.forEach(({ id, label }) => {
       const type = BALLOON_TYPES[id];
       if (!type) return;
 
       const isPenalty = type.scoreValue < 0;
       const sign = isPenalty ? '' : '+';
 
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="scoring-name"><span aria-hidden="true">${icon}</span> ${label}</td>
-        <td class="scoring-value ${isPenalty ? 'scoring-negative' : 'scoring-positive'}">${sign}${type.scoreValue} pts</td>
+      const item = document.createElement('div');
+      item.className = 'scoring-item';
+      item.innerHTML = `
+        <div class="scoring-thumb-wrap">
+          <img class="scoring-thumb" alt="${label}" />
+        </div>
+        <span class="scoring-value ${isPenalty ? 'scoring-negative' : 'scoring-positive'}">${sign}${type.scoreValue} pts</span>
       `;
-      this.scoringTableBody.appendChild(row);
+      this.scoringGrid.appendChild(item);
+      imageEls[id] = item.querySelector('.scoring-thumb');
     });
+
+    try {
+      const thumbnails = await generateBalloonThumbnails();
+      Object.entries(thumbnails).forEach(([id, dataUrl]) => {
+        if (imageEls[id]) imageEls[id].src = dataUrl;
+      });
+    } catch (err) {
+      // Se o render dos thumbnails falhar por algum motivo (ex.: sem
+      // suporte a WebGL), o grid segue exibindo os pontos normalmente
+      // — só fica sem a imagem do balão.
+      console.error('Falha ao gerar os thumbnails dos balões:', err);
+    }
   }
 
   async _refreshLeaderboard() {

@@ -73,7 +73,7 @@
         <section class="overlay-card instructions-card">
           <h2 class="instructions-title">📋 Instruções &amp; Pontuação</h2>
 
-          <div class="instructions-columns">
+          <div class="instructions-sections">
             <div class="instructions-basic">
               <h3 class="instructions-subtitle">Como jogar</h3>
               <ul class="instructions-list">
@@ -85,12 +85,12 @@
 
             <div class="instructions-scoring">
               <h3 class="instructions-subtitle">Pontuação dos balões</h3>
-              <table class="scoring-table">
-                <tbody id="scoring-table-body">
-                  <!-- Preenchida em runtime a partir de BalloonTypes.js, para nunca ficar
-                       dessincronizada dos valores reais usados pelo jogo (ver MenuScreen.js). -->
-                </tbody>
-              </table>
+              <div id="scoring-grid" class="scoring-grid">
+                <!-- Preenchida em runtime a partir de BalloonTypes.js (pontos) e dos
+                     modelos 3D reais dos balões (imagem) — para nunca ficar
+                     dessincronizada dos valores/visuais reais usados pelo jogo
+                     (ver MenuScreen.js e BalloonThumbnailRenderer.js). -->
+              </div>
             </div>
           </div>
         </section>
