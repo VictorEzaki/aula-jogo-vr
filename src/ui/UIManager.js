@@ -3,6 +3,7 @@ import { HUDPanel3D } from './panels/HUDPanel3D.js';
 import { GameOverPanel3D } from './panels/GameOverPanel3D.js';
 import { CountdownPanel3D } from './panels/CountdownPanel3D.js';
 import { ScorePopupManager } from './panels/ScorePopupManager.js';
+import { MatchClockPanel3D } from './panels/MatchClockPanel3D.js';
 
 /**
  * Fachada única para as três telas do jogo. O Game nunca manipula
@@ -19,6 +20,7 @@ export class UIManager {
     this.gameOver = new GameOverPanel3D(scene);
     this.countdown = new CountdownPanel3D(scene);
     this.scorePopups = new ScorePopupManager(worldGroup);
+    this.matchClock = new MatchClockPanel3D(worldGroup);
   }
 
   showMenu() {
@@ -26,6 +28,7 @@ export class UIManager {
     this.gameOver.hide();
     this.countdown.hide();
     this.scorePopups.clear();
+    this.matchClock.hide();
     return this.menu.show();
   }
 
@@ -38,6 +41,7 @@ export class UIManager {
     this.countdown.hide();
     this.scorePopups.clear(); // evita popup "fantasma" sobrando de uma partida anterior
     this.hud.show();
+    this.matchClock.show();
   }
 
   /** Mostra o painel 3D de contagem regressiva (e esconde o Game Over, no caso do "Tentar novamente"). */
@@ -56,6 +60,7 @@ export class UIManager {
 
   updateHUD(score, timeLeft) {
     this.hud.update(score, timeLeft);
+    this.matchClock.update(timeLeft);
   }
 
   /** Dispara o "+50"/"-10" flutuante na posição onde o balão foi estourado. */

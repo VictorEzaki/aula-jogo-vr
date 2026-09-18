@@ -271,6 +271,25 @@ html, body {
   font-size: 1.15rem;
 }
 
+/* Ícones Font Awesome (SVG inline, sem bundler de pacote de ícones —
+   ver comentário em MuteButton.js). `fill: currentColor` faz o ícone
+   herdar a cor do texto ao redor, então basta colorir o elemento pai. */
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
+.leaderboard-title,
+.instructions-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 /* Grid com o modelo 3D de cada balão (renderizado em
    BalloonThumbnailRenderer.js) + a pontuação correspondente. O modelo
    substitui o antigo ícone+nome em texto — ver MenuScreen.js. */
@@ -349,6 +368,12 @@ html, body {
   cursor: pointer;
   box-shadow: 0 0 16px rgba(255, 179, 71, 0.35);
   transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mute-button .icon-svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: 0;
 }
 
 .mute-button:hover {
