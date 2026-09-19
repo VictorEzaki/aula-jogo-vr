@@ -106,6 +106,10 @@ export class Game {
       onComplete: () => this._onCountdownComplete(),
     });
     this._pendingPlayerName = '';
+    // id do registro de score no backend da partida em andamento.
+    // null = ainda não existe (próximo gameOver faz POST); com valor =
+    // já existe (próximo gameOver faz PUT). Resetado em _handlePlay.
+    this._currentScoreId = null;
 
     this._setupVRButton(renderer);
     this._wireEvents();
@@ -138,9 +142,22 @@ export class Game {
     this.input.onSelect((ray, sourceId) => this._handleSelect(ray, sourceId));
 
     this.state.onGameOver(({ playerName, score }) => {
-      // Ponto de integração com o backend: disparado automaticamente
-      // ao fim de toda partida, incluindo em "Tentar novamente".
-      ScoreService.saveScore(playerName, score);
+      // Disparado automaticamente só quando o cronômetro zera.
+      // Primeira partida da sessão -> cria o registro (POST).
+      // "Tentar novamente" -> atualiza o mesmo registro (PUT).
+      if (this._currentScoreId) {
+        ScoreService.updateScore(this._currentScoreId, score).catch((err) => {
+          console.error('Falha ao atualizar a pontuação:', err);
+        });
+      } else {
+        ScoreService.saveScore(playerName, score)
+          .then((saved) => {
+            this._currentScoreId = saved.id;
+          })
+          .catch((err) => {
+            console.error('Falha ao salvar a pontuação:', err);
+          });
+      }
       this.audioManager.restoreThemeVolume();
 
       this.ui.showGameOver(score, {
@@ -156,6 +173,7 @@ export class Game {
     this.ui.menu.setBusy(false);
 
     this._pendingPlayerName = playerName;
+    this._currentScoreId = null; // nova sessão -> próximo gameOver cria um registro novo
     this.ui.hideMenu();
     this._startCountdown();
   }

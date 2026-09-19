@@ -1,58 +1,59 @@
 /**
- * Camada de integração com o backend de pontuação.
+ * Camada de integração com o backend de pontuação (Node/Express/Sequelize).
  *
- * Por enquanto simula a rede com dados mockados em memória, mas a
- * ASSINATURA das funções já é a definitiva: `fetchLeaderboard()`
- * retorna uma Promise com os top 5, e `saveScore(playerName, score)`
- * retorna uma Promise que resolve quando o score foi salvo.
- *
- * Quando o backend (Node/Express/Sequelize) estiver pronto, troque
- * apenas o CORPO destas duas funções por chamadas `fetch('/api/scores...')`
- * — nenhum outro arquivo do jogo precisa mudar, pois Game.js e
- * MenuScreen.js só conhecem esta interface.
- *
- * Sugestão de contrato REST para quando a integração acontecer:
- *   GET  /api/scores/top      -> [{ playerName, score }, ...] (5 primeiros)
- *   POST /api/scores          -> body { playerName, score }   -> 201 Created
+ * Contrato REST:
+ *   GET  /api/scores/top?limit=5   -> [{ id, playerName, score, createdAt }, ...]
+ *   POST /api/scores               -> body { playerName, score } -> 201, cria registro
+ *   PUT  /api/scores/:id           -> body { score } -> 200, atualiza (só se score for maior)
  */
 
-const SIMULATED_LATENCY_MS = 350;
+// Sem bundler neste projeto (Three.js é carregado via importmap direto do
+// navegador — ver index.html), então não existe `import.meta.env`. A URL
+// do backend fica como constante simples, no mesmo padrão dos outros
+// tunables do projeto (topo do arquivo, fácil de trocar por ambiente).
+const API_BASE_URL = 'http://localhost:3000';
 
-let mockLeaderboard = [
-  { playerName: 'Ana', score: 1850 },
-  { playerName: 'Bruno', score: 1620 },
-  { playerName: 'Carla', score: 1400 },
-  { playerName: 'Diego', score: 1150 },
-  { playerName: 'Eva', score: 900 },
-];
+async function parseResponse(response, fallbackMessage) {
+  const body = await response.json().catch(() => null);
 
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  if (!response.ok) {
+    throw new Error(body?.message || fallbackMessage);
+  }
+
+  return body.data;
 }
 
 export const ScoreService = {
-  /** Busca as 5 maiores pontuações. Hoje: mock local. Depois: GET /api/scores/top. */
+  /** Busca as 5 maiores pontuações no backend. */
   async fetchLeaderboard() {
-    await delay(SIMULATED_LATENCY_MS);
-    return [...mockLeaderboard]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+    const response = await fetch(`${API_BASE_URL}/api/scores/top?limit=5`);
+    return parseResponse(response, 'Falha ao buscar o ranking.');
   },
 
   /**
-   * Salva o resultado de uma partida. Disparada automaticamente ao
-   * final de cada rodada (incluindo em "Tentar novamente").
-   * Hoje: mock local. Depois: POST /api/scores.
+   * Cria um novo registro de pontuação. Usado apenas na PRIMEIRA partida
+   * de uma sessão (ver Game.js: _handlePlay reseta _currentScoreId).
+   * Retorna o registro criado, incluindo o `id` (necessário para updateScore).
    */
   async saveScore(playerName, score) {
-    console.log(`[ScoreService] Salvando score: ${playerName} = ${score}`);
-    await delay(SIMULATED_LATENCY_MS);
+    const response = await fetch(`${API_BASE_URL}/api/scores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerName, score }),
+    });
+    return parseResponse(response, 'Falha ao salvar a pontuação.');
+  },
 
-    mockLeaderboard.push({ playerName, score });
-    mockLeaderboard = mockLeaderboard
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 20); // mantém só um histórico razoável em memória
-
-    return { playerName, score, savedAt: new Date().toISOString() };
+  /**
+   * Atualiza a pontuação de um registro já existente. Usado em
+   * "Tentar novamente" (ver Game.js: _handleRetry mantém _currentScoreId).
+   */
+  async updateScore(id, score) {
+    const response = await fetch(`${API_BASE_URL}/api/scores/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ score }),
+    });
+    return parseResponse(response, 'Falha ao atualizar a pontuação.');
   },
 };
