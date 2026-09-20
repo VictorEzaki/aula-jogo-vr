@@ -11,7 +11,7 @@
 // navegador — ver index.html), então não existe `import.meta.env`. A URL
 // do backend fica como constante simples, no mesmo padrão dos outros
 // tunables do projeto (topo do arquivo, fácil de trocar por ambiente).
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "https://aula-jogo-vr.onrender.com";
 
 async function parseResponse(response, fallbackMessage) {
   const body = await response.json().catch(() => null);
