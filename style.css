@@ -357,6 +357,7 @@ html, body {
   display: block;
   max-width: 200px;
   margin: 0 auto 24px;
+  filter: invert(1);
 }
 
 .team-members {
