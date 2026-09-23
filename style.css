@@ -348,6 +348,70 @@ html, body {
   color: #ff6b6b;
 }
 
+/* ---------- Card: Equipe (logo do Senac + membros) ---------- */
+.team-card {
+  width: 100%;
+}
+
+.team-logo {
+  display: block;
+  max-width: 200px;
+  margin: 0 auto 24px;
+}
+
+.team-members {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 110px;
+}
+
+.team-member-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffb347;
+  background: #120a26;
+}
+
+.team-member-name {
+  font-size: 0.92rem;
+  color: #fff6da;
+  font-weight: bold;
+  text-align: center;
+}
+
+.team-member-links {
+  display: flex;
+  gap: 10px;
+}
+
+.team-social-link {
+  display: inline-flex;
+  color: #cbd5f5;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.team-social-link:hover,
+.team-social-link:focus-visible {
+  color: #ffe14d;
+  transform: translateY(-2px);
+}
+
+.team-social-icon {
+  width: 18px;
+  height: 18px;
+}
+
 /* ---------- Botão de mutar/desmutar a música ---------- */
 .mute-button {
   position: fixed;
