@@ -5,7 +5,7 @@ import { BALLOON_SLOTS } from './BalloonSlots.js';
 
 // --- Clown Delight: bônus raro, um por vez ---
 const CLOWN_SPAWN_INTERVAL = 7; // "a cada 5 segundos"
-const CLOWN_LIFETIME = 2; // "some se não estourar em 2 segundos"
+const CLOWN_LIFETIME = 1.5; // "some se não estourar em 2 segundos"
 // Limite de quantas vezes o balão palhaço pode aparecer numa mesma
 // partida. Cada aparição concede até +5s (ver BalloonTypes.timeValue),
 // então esse teto também limita o total de tempo bônus possível por
@@ -24,7 +24,7 @@ const PENALTY_LIFETIME = 4;
 const RANDOM_POOL_TYPES = [BalloonTypeId.CARNIVAL_20, BalloonTypeId.SKY_ORB];
 const RANDOM_POOL_MIN_INTERVAL = 0.05;
 const RANDOM_POOL_MAX_INTERVAL = 1;
-const RANDOM_POOL_LIFETIME = 3.5;
+const RANDOM_POOL_LIFETIME = 2;
 const RANDOM_POOL_MAX_CONCURRENT = 10;
 
 // Tipos que contam para o gatilho da penalidade ("balões... que somam pontuação").
