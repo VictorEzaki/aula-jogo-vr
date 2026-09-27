@@ -5,7 +5,7 @@ import { BALLOON_SLOTS } from './BalloonSlots.js';
 
 // --- Clown Delight: bônus raro, um por vez ---
 const CLOWN_SPAWN_INTERVAL = 7; // "a cada 5 segundos"
-const CLOWN_LIFETIME = 1.5; // "some se não estourar em 2 segundos"
+const CLOWN_LIFETIME = 1; // "some se não estourar em 2 segundos"
 // Limite de quantas vezes o balão palhaço pode aparecer numa mesma
 // partida. Cada aparição concede até +5s (ver BalloonTypes.timeValue),
 // então esse teto também limita o total de tempo bônus possível por
@@ -14,17 +14,17 @@ const CLOWN_MAX_SPAWNS = 100;
 
 // --- Penalidade: aparece a cada N balões positivos estourados ---
 const PENALTY_TRIGGER_COUNT = 5; // "a cada 5 balões estourados que somam pontuação"
-const PENALTY_MAX_CONCURRENT = 3;
-const PENALTY_LIFETIME = 4;
+const PENALTY_MAX_CONCURRENT = 4;
+const PENALTY_LIFETIME = 2;
 
 // --- Pool "sem especificação de tempo" -> intervalo aleatório ---
 // Não foi pedido um valor específico, então escolhi um intervalo que
 // mantém o ritmo do jogo ativo sem exagerar na quantidade de balões
 // em tela ao mesmo tempo. Fácil de recalibrar depois de testar.
 const RANDOM_POOL_TYPES = [BalloonTypeId.CARNIVAL_20, BalloonTypeId.SKY_ORB];
-const RANDOM_POOL_MIN_INTERVAL = 0.05;
-const RANDOM_POOL_MAX_INTERVAL = 1;
-const RANDOM_POOL_LIFETIME = 2;
+const RANDOM_POOL_MIN_INTERVAL = 0;
+const RANDOM_POOL_MAX_INTERVAL = 0.75;
+const RANDOM_POOL_LIFETIME = 1.5;
 const RANDOM_POOL_MAX_CONCURRENT = 10;
 
 // Tipos que contam para o gatilho da penalidade ("balões... que somam pontuação").
