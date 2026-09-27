@@ -19,11 +19,12 @@ function drawBoard(ctx, canvas, label, value) {
 }
 
 /**
- * HUD em espaço 3D: dois quadros presos à barraca, um com a pontuação
- * e outro com o tempo restante — a mesma linguagem visual dos
- * quadros "SCORE / AMMO" de uma barraca de tiro real. Diferente do
- * HUD em DOM do jogo original, este funciona idêntico em desktop e
- * dentro do headset, porque é geometria da cena, não overlay de tela.
+ * HUD em espaço 3D preso à barraca, com a pontuação do jogador. O
+ * tempo restante não é mais mostrado como número exato aqui — virou
+ * as barras visuais laterais do balcão (ver MatchTimeBarsPanel3D).
+ * Diferente do HUD em DOM do jogo original, este funciona idêntico em
+ * desktop e dentro do headset, porque é geometria da cena, não
+ * overlay de tela.
  */
 export class HUDPanel3D {
   constructor(parent) {
@@ -32,7 +33,6 @@ export class HUDPanel3D {
     parent.add(this.group);
 
     this._lastScore = null;
-    this._lastTime = null;
 
     this.scorePanel = createTextPanel({
       width: 1.3,
@@ -41,24 +41,13 @@ export class HUDPanel3D {
       canvasHeight: 200,
       draw: (ctx, canvas) => drawBoard(ctx, canvas, 'PONTUAÇÃO', '0'),
     });
-    this.scorePanel.mesh.position.set(-1.5, 2.7, 0.5);
+    this.scorePanel.mesh.position.set(0, 2.7, 0.5);
     this.group.add(this.scorePanel.mesh);
-
-    this.timePanel = createTextPanel({
-      width: 1.3,
-      height: 0.65,
-      canvasWidth: 400,
-      canvasHeight: 200,
-      draw: (ctx, canvas) => drawBoard(ctx, canvas, 'TEMPO', '60'),
-    });
-    this.timePanel.mesh.position.set(1.5, 2.7, 0.5);
-    this.group.add(this.timePanel.mesh);
   }
 
   show() {
     this.group.visible = true;
     this._lastScore = null;
-    this._lastTime = null;
   }
 
   hide() {
@@ -66,17 +55,9 @@ export class HUDPanel3D {
   }
 
   /** Só redesenha o canvas quando o valor realmente muda (evita custo de textura todo frame). */
-  update(score, timeLeft) {
-    const roundedTime = Math.ceil(timeLeft);
-
-    if (score !== this._lastScore) {
-      this._lastScore = score;
-      this.scorePanel.redraw((ctx, canvas) => drawBoard(ctx, canvas, 'PONTUAÇÃO', String(score)));
-    }
-
-    if (roundedTime !== this._lastTime) {
-      this._lastTime = roundedTime;
-      this.timePanel.redraw((ctx, canvas) => drawBoard(ctx, canvas, 'TEMPO', String(roundedTime)));
-    }
+  update(score) {
+    if (score === this._lastScore) return;
+    this._lastScore = score;
+    this.scorePanel.redraw((ctx, canvas) => drawBoard(ctx, canvas, 'PONTUAÇÃO', String(score)));
   }
 }
