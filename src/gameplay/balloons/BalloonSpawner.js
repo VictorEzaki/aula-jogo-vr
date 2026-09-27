@@ -6,6 +6,11 @@ import { BALLOON_SLOTS } from './BalloonSlots.js';
 // --- Clown Delight: bônus raro, um por vez ---
 const CLOWN_SPAWN_INTERVAL = 7; // "a cada 5 segundos"
 const CLOWN_LIFETIME = 2; // "some se não estourar em 2 segundos"
+// Limite de quantas vezes o balão palhaço pode aparecer numa mesma
+// partida. Cada aparição concede até +5s (ver BalloonTypes.timeValue),
+// então esse teto também limita o total de tempo bônus possível por
+// partida; ajuste aqui para recalibrar.
+const CLOWN_MAX_SPAWNS = 100;
 
 // --- Penalidade: aparece a cada N balões positivos estourados ---
 const PENALTY_TRIGGER_COUNT = 5; // "a cada 5 balões estourados que somam pontuação"
@@ -38,6 +43,7 @@ export class BalloonSpawner {
     this._occupiedSlots = new Set();
 
     this._clownTimer = 0;
+    this._clownSpawnCount = 0;
     this._positivePopCount = 0;
     this._randomPoolTimer = this._rollNextRandomInterval();
   }
@@ -48,6 +54,7 @@ export class BalloonSpawner {
     this.active = [];
     this._occupiedSlots.clear();
     this._clownTimer = 0;
+    this._clownSpawnCount = 0;
     this._positivePopCount = 0;
     this._randomPoolTimer = this._rollNextRandomInterval();
   }
@@ -79,12 +86,12 @@ export class BalloonSpawner {
 
   /**
    * Chamado pelo Game quando um raio acerta um balão vivo (ver
-   * resolveBalloon). Aplica a regra da penalidade e devolve os pontos
-   * a somar (pode ser negativo).
+   * resolveBalloon). Aplica a regra da penalidade e devolve pontos e
+   * variação de tempo a aplicar (points/timeDelta podem ser negativos).
    */
   popBalloon(balloon) {
     const wasAlive = balloon.pop();
-    if (!wasAlive) return 0;
+    if (!wasAlive) return { points: 0, timeDelta: 0 };
 
     if (POSITIVE_TYPES.has(balloon.typeId)) {
       this._positivePopCount += 1;
@@ -96,7 +103,7 @@ export class BalloonSpawner {
       }
     }
 
-    return balloon.scoreValue;
+    return { points: balloon.scoreValue, timeDelta: balloon.timeValue };
   }
 
   /** Meshes de todos os balões vivos (agrupados por balão), prontos para raycastFromRay. */
@@ -117,12 +124,16 @@ export class BalloonSpawner {
   }
 
   update(dt) {
-    // Clown Delight: intervalo fixo, só 1 por vez.
+    // Clown Delight: intervalo fixo, só 1 por vez, até o teto CLOWN_MAX_SPAWNS.
     this._clownTimer += dt;
     if (this._clownTimer >= CLOWN_SPAWN_INTERVAL) {
       this._clownTimer = 0;
-      if (this._countActive(BalloonTypeId.CLOWN_DELIGHT) === 0) {
+      if (
+        this._clownSpawnCount < CLOWN_MAX_SPAWNS &&
+        this._countActive(BalloonTypeId.CLOWN_DELIGHT) === 0
+      ) {
         this._spawn(BalloonTypeId.CLOWN_DELIGHT, CLOWN_LIFETIME);
+        this._clownSpawnCount += 1;
       }
     }
 
