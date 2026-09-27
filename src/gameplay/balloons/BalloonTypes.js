@@ -18,24 +18,28 @@ export const BALLOON_TYPES = {
     id: BalloonTypeId.CLOWN_DELIGHT,
     modelUrl: 'assets/models/balloon-clown-delight.glb',
     scoreValue: 50,
+    timeValue: 5, // estourar soma +5s ao cronômetro da partida (teto em MATCH_DURATION)
     scale: 0.22,
   },
   [BalloonTypeId.PENALTY]: {
     id: BalloonTypeId.PENALTY,
     modelUrl: 'assets/models/BalaoPenalidade5k.glb',
     scoreValue: -10,
+    timeValue: -5, // estourar subtrai 10s do cronômetro da partida
     scale: 0.22,
   },
   [BalloonTypeId.CARNIVAL_20]: {
     id: BalloonTypeId.CARNIVAL_20,
     modelUrl: 'assets/models/BalaoAzul9k.glb',
     scoreValue: 20,
+    timeValue: 0,
     scale: 0.22,
   },
   [BalloonTypeId.SKY_ORB]: {
     id: BalloonTypeId.SKY_ORB,
     modelUrl: 'assets/models/BalaoAmarelo5k.glb',
     scoreValue: 10,
+    timeValue: 0,
     scale: 0.22,
   },
 };

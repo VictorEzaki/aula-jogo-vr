@@ -113,6 +113,7 @@ export class MenuScreen {
           <img class="scoring-thumb" alt="${label}" />
         </div>
         <span class="scoring-value ${isPenalty ? 'scoring-negative' : 'scoring-positive'}">${sign}${type.scoreValue} pts</span>
+        <span class="scoring-value ${isPenalty ? 'scoring-negative' : 'scoring-positive'}">${sign}${type.timeValue} s</span>
       `;
       this.scoringGrid.appendChild(item);
       imageEls[id] = item.querySelector('.scoring-thumb');

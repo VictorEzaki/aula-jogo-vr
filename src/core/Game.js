@@ -240,9 +240,10 @@ export class Game {
 
     const typeId = balloon.typeId;
     const popPosition = balloon.mesh.position.clone();
-    const points = this.balloonSpawner.popBalloon(balloon);
+    const { points, timeDelta } = this.balloonSpawner.popBalloon(balloon);
     if (points !== 0) this.audioManager.playBalloonPopSfx(points);
     this.state.addScore(points);
+    if (timeDelta !== 0) this.state.addTime(timeDelta);
     this._triggerPopHaptic(sourceId, typeId);
     this.ui.spawnScorePopup(popPosition, points);
   }

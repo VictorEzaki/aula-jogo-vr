@@ -7,7 +7,7 @@ export const GameStates = Object.freeze({
 // Exportada para que a UI (ex: card de instruções do menu) sempre
 // mostre o valor real usado pela partida, em vez de um número fixo
 // digitado à mão em outro arquivo.
-export const MATCH_DURATION = 45;
+export const MATCH_DURATION = 20;
 
 /**
  * Estado puro da aplicação: em qual tela estamos, nome do jogador,
@@ -52,6 +52,19 @@ export class GameStateMachine {
   addScore(points) {
     if (this.state !== GameStates.PLAYING) return;
     this.score += points;
+  }
+
+  /**
+   * Aplica ganho/perda de tempo (balão palhaço/penalidade — ver
+   * BalloonTypes.timeValue). Sempre limitado entre 0 e MATCH_DURATION:
+   * o teto evita que a partida se estenda indefinidamente (e mantém
+   * MatchTimeBarsPanel3D coerente, já que a barra é calculada em cima
+   * desse mesmo valor máximo); o piso apenas garante que não fique
+   * negativo até o próximo tick() encerrar a partida.
+   */
+  addTime(seconds) {
+    if (this.state !== GameStates.PLAYING) return;
+    this.timeLeft = Math.min(MATCH_DURATION, Math.max(0, this.timeLeft + seconds));
   }
 
   /** Avança o cronômetro. Encerra a partida automaticamente ao zerar. */

@@ -16,6 +16,7 @@ export class Balloon {
   constructor(typeId, position, lifetimeSeconds) {
     this.typeId = typeId;
     this.scoreValue = BALLOON_TYPES[typeId].scoreValue;
+    this.timeValue = BALLOON_TYPES[typeId].timeValue ?? 0;
     this._baseScale = BALLOON_TYPES[typeId].scale;
 
     this.mesh = createBalloonMesh(typeId);
