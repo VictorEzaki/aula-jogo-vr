@@ -8,8 +8,8 @@ import { MATCH_DURATION } from '../../core/GameStateMachine.js';
 // BOOTH_POSITION em PrizeBoothModel.js: x=0, z=-4). Ajuste
 // BAR_X_OFFSET/BAR_Z depois de conferir no navegador se elas ficam
 // realmente ao lado da barraca sem encostar nela.
-const BAR_X_OFFSET = 1.9;
-const BAR_Y_BOTTOM = 0.9;
+const BAR_X_OFFSET = 2;
+const BAR_Y_BOTTOM = 0;
 const BAR_HEIGHT_WORLD = 2.0;
 const BAR_Y_CENTER = BAR_Y_BOTTOM + BAR_HEIGHT_WORLD / 2;
 const BAR_Z = -3.9;
