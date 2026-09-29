@@ -4,7 +4,7 @@
 // só dispara callbacks, e quem chama decide como exibir (ex: atualizando
 // um TextPanelFactory) e o que fazer ao terminar (ex: mudar de estado).
 
-const DEFAULT_STEPS = ['3', '2', '1', 'JOGAR!'];
+const DEFAULT_STEPS = ['5', '4', '3', '2', '1', 'JOGAR!'];
 const DEFAULT_STEP_DURATION_MS = 1000;
 
 export class CountdownController {
