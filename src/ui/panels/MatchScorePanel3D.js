@@ -9,7 +9,7 @@ import { createTextPanel } from './TextPanelFactory.js';
 const SCORE_POSITION = { x: 0, y: 0.3, z: -3 };
 const SCORE_WIDTH = 0.6;
 const SCORE_HEIGHT = 0.2;
-const SCORE_TILT_DEGREES = 20;
+const SCORE_TILT_DEGREES = 10;
 
 function drawScore(ctx, canvas, score) {
   ctx.fillStyle = '#1a1030';
